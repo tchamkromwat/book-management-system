@@ -1,36 +1,48 @@
 <template>
   <div class="px-4 sm:px-0">
     <!-- Hero Section -->
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-gray-900 sm:text-6xl">
-        Welcome to InnovateAI BookManager
-      </h1>
-      <p class="mt-6 text-lg leading-8 text-gray-600">
-        {{ authStore.isAuthenticated 
-            ? `Hello ${authStore.fullName || 'there'}! Manage your digital book collection with ease.` 
-            : 'Your digital library management solution. Organize, track, and discover books effortlessly.' 
-        }}
-      </p>
-      <div class="mt-10 flex items-center justify-center gap-x-6">
-        <NuxtLink
-          v-if="!authStore.isAuthenticated"
-          to="/auth/register"
-          class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        >
-          Get started
-        </NuxtLink>
-        <NuxtLink
-          :to="authStore.isAuthenticated ? '/books' : '/auth/login'"
-          class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-        >
-          {{ authStore.isAuthenticated ? 'View Your Books' : 'Sign In' }}
-        </NuxtLink>
-        <NuxtLink
-          to="/books"
-          class="text-sm font-semibold leading-6 text-gray-900"
-        >
-          Browse collection <span aria-hidden="true">→</span>
-        </NuxtLink>
+    <div class="relative text-center mb-12 py-24 sm:py-32">
+      <!-- Background Image -->
+      <div 
+        class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style="background-image: url('/images/library.jpg')"
+      ></div>
+      
+      <!-- Dark Overlay for better text readability -->
+      <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+      
+      <!-- Content -->
+      <div class="relative z-10">
+        <h1 class="text-4xl font-bold text-white sm:text-6xl">
+          Welcome to InnovateAI BookManager
+        </h1>
+        <p class="mt-6 text-lg leading-8 text-gray-200">
+          {{ authStore.isAuthenticated 
+              ? `Hello ${authStore.fullName || 'there'}! Manage your digital book collection with ease.` 
+              : 'Your digital library management solution. Organize, track, and discover books effortlessly.' 
+          }}
+        </p>
+        <div class="mt-10 flex items-center justify-center gap-x-6">
+          <NuxtLink
+            v-if="!authStore.isAuthenticated"
+            to="/auth/register"
+            class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            Get started
+          </NuxtLink>
+          <NuxtLink
+            :to="authStore.isAuthenticated ? '/books' : '/auth/login'"
+            class="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          >
+            {{ authStore.isAuthenticated ? 'View Your Books' : 'Sign In' }}
+          </NuxtLink>
+          <NuxtLink
+            to="/books"
+            class="text-sm font-semibold leading-6 text-gray-200 hover:text-white"
+          >
+            Browse collection <span aria-hidden="true">→</span>
+          </NuxtLink>
+        </div>
       </div>
     </div>
 

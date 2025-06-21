@@ -77,6 +77,14 @@ export interface AuthResponse {
     access_token: string;
 }
 
+// Backend API Response wrapper (from TransformInterceptor)
+export interface BackendResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+    meta?: PaginationMeta;
+}
+
 // Form Types
 export interface FormState {
     loading: boolean;

@@ -1,4 +1,5 @@
-import type { AuthResponse, LoginDto, RegisterDto, User } from '~/types'
+import { defineStore } from 'pinia'
+import type { AuthResponse, BackendResponse, LoginDto, RegisterDto, User } from '~/types'
 
 export const useAuthStore = defineStore('auth', () => {
     // State
@@ -24,10 +25,10 @@ export const useAuthStore = defineStore('auth', () => {
 
         // Store token in cookie
         const tokenCookie = useCookie('auth-token', {
-            default: () => null,
+            default: () => '',
             maxAge: 60 * 60 * 24 * 7, // 7 days
             httpOnly: false,
-            secure: true,
+            secure: false, // Set to false for development
             sameSite: 'strict'
         })
         tokenCookie.value = authData.access_token
@@ -52,12 +53,12 @@ export const useAuthStore = defineStore('auth', () => {
 
         try {
             const config = useRuntimeConfig()
-            const response = await $fetch<AuthResponse>(`${config.public.apiBase}/auth/login`, {
+            const response = await $fetch<BackendResponse<AuthResponse>>(`${config.public.apiBase}/auth/login`, {
                 method: 'POST',
                 body: credentials
             })
-            setAuth(response)
-            return response
+            setAuth(response.data)
+            return response.data
         } catch (err: any) {
             error.value = err.data?.message || 'Login failed'
             throw err
@@ -72,12 +73,12 @@ export const useAuthStore = defineStore('auth', () => {
 
         try {
             const config = useRuntimeConfig()
-            const response = await $fetch<AuthResponse>(`${config.public.apiBase}/auth/register`, {
+            const response = await $fetch<BackendResponse<AuthResponse>>(`${config.public.apiBase}/auth/register`, {
                 method: 'POST',
                 body: userData
             })
-            setAuth(response)
-            return response
+            setAuth(response.data)
+            return response.data
         } catch (err: any) {
             error.value = err.data?.message || 'Registration failed'
             throw err
@@ -95,8 +96,10 @@ export const useAuthStore = defineStore('auth', () => {
         if (!token.value) return
 
         try {
-            const { get } = useApi()
-            const response = await get<User>('/auth/profile')
+            const { api } = useApi()
+            const response = await api<BackendResponse<User>>('/auth/profile', {
+                method: 'GET'
+            })
             user.value = response.data
         } catch (err: any) {
             // If profile fetch fails, likely token is invalid
