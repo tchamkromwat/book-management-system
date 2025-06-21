@@ -1,0 +1,162 @@
+{
+    "users": [
+        {
+            "username": "admin",
+            "email": "admin@bookmanagement.com",
+            "password": "123456",
+            "first_name": "Admin",
+            "last_name": "User",
+            "role": "admin",
+            "is_active": true
+        },
+        {
+            "username": "johndoe",
+            "email": "john.doe@example.com",
+            "password": "123456",
+            "first_name": "John",
+            "last_name": "Doe",
+            "role": "user",
+            "is_active": true
+        },
+        {
+            "username": "janesmith",
+            "email": "jane.smith@example.com",
+            "password": "123456",
+            "first_name": "Jane",
+            "last_name": "Smith",
+            "role": "user",
+            "is_active": true
+        },
+        {
+            "username": "librarian",
+            "email": "librarian@bookmanagement.com",
+            "password": "123456",
+            "first_name": "Library",
+            "last_name": "Manager",
+            "role": "librarian",
+            "is_active": true
+        }
+    ],
+    "books": [
+        {
+            "title": "The Great Gatsby",
+            "author": "F. Scott Fitzgerald",
+            "published_year": 1925,
+            "genre": "Classic Literature"
+        },
+        {
+            "title": "To Kill a Mockingbird",
+            "author": "Harper Lee",
+            "published_year": 1960,
+            "genre": "Classic Literature"
+        },
+        {
+            "title": "1984",
+            "author": "George Orwell",
+            "published_year": 1949,
+            "genre": "Dystopian Fiction"
+        },
+        {
+            "title": "Pride and Prejudice",
+            "author": "Jane Austen",
+            "published_year": 1813,
+            "genre": "Romance"
+        },
+        {
+            "title": "The Catcher in the Rye",
+            "author": "J.D. Salinger",
+            "published_year": 1951,
+            "genre": "Coming-of-age Fiction"
+        },
+        {
+            "title": "Lord of the Flies",
+            "author": "William Golding",
+            "published_year": 1954,
+            "genre": "Adventure Fiction"
+        },
+        {
+            "title": "Brave New World",
+            "author": "Aldous Huxley",
+            "published_year": 1932,
+            "genre": "Science Fiction"
+        },
+        {
+            "title": "The Lord of the Rings",
+            "author": "J.R.R. Tolkien",
+            "published_year": 1954,
+            "genre": "Fantasy"
+        },
+        {
+            "title": "Harry Potter and the Philosopher's Stone",
+            "author": "J.K. Rowling",
+            "published_year": 1997,
+            "genre": "Fantasy"
+        },
+        {
+            "title": "The Hobbit",
+            "author": "J.R.R. Tolkien",
+            "published_year": 1937,
+            "genre": "Fantasy"
+        },
+        {
+            "title": "Fahrenheit 451",
+            "author": "Ray Bradbury",
+            "published_year": 1953,
+            "genre": "Dystopian Fiction"
+        },
+        {
+            "title": "Jane Eyre",
+            "author": "Charlotte Brontë",
+            "published_year": 1847,
+            "genre": "Gothic Fiction"
+        },
+        {
+            "title": "The Picture of Dorian Gray",
+            "author": "Oscar Wilde",
+            "published_year": 1890,
+            "genre": "Gothic Fiction"
+        },
+        {
+            "title": "Moby Dick",
+            "author": "Herman Melville",
+            "published_year": 1851,
+            "genre": "Adventure Fiction"
+        },
+        {
+            "title": "Wuthering Heights",
+            "author": "Emily Brontë",
+            "published_year": 1847,
+            "genre": "Gothic Fiction"
+        },
+        {
+            "title": "The Chronicles of Narnia",
+            "author": "C.S. Lewis",
+            "published_year": 1950,
+            "genre": "Fantasy"
+        },
+        {
+            "title": "Dune",
+            "author": "Frank Herbert",
+            "published_year": 1965,
+            "genre": "Science Fiction"
+        },
+        {
+            "title": "The Hitchhiker's Guide to the Galaxy",
+            "author": "Douglas Adams",
+            "published_year": 1979,
+            "genre": "Science Fiction Comedy"
+        },
+        {
+            "title": "Crime and Punishment",
+            "author": "Fyodor Dostoevsky",
+            "published_year": 1866,
+            "genre": "Psychological Fiction"
+        },
+        {
+            "title": "War and Peace",
+            "author": "Leo Tolstoy",
+            "published_year": 1869,
+            "genre": "Historical Fiction"
+        }
+    ]
+}

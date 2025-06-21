@@ -1,0 +1,42 @@
+{
+    "name": "book-management-system",
+    "version": "1.0.0",
+    "description": "Book Management System - Full Stack Application",
+    "private": true,
+    "scripts": {
+        "dev": "docker-compose down -v && docker-compose up --build",
+        "dev:detached": "docker-compose up --build -d",
+        "dev:logs": "docker-compose logs -f",
+        "dev:stop": "docker-compose down",
+        "dev:restart": "docker-compose restart",
+        "dev:clean": "docker-compose down -v && docker system prune -f",
+        "dev:shell:backend": "docker-compose exec backend sh",
+        "dev:shell:frontend": "docker-compose exec frontend sh",
+        "dev:shell:db": "docker-compose exec postgres psql -U admin -d book_management",
+        "local:dev": "concurrently \"pnpm backend:dev\" \"pnpm frontend:dev\"",
+        "local:build": "pnpm backend:build && pnpm frontend:build",
+        "local:start": "pnpm backend:start",
+        "backend:dev": "pnpm --filter backend dev",
+        "backend:build": "pnpm --filter backend build",
+        "backend:start": "pnpm --filter backend start:prod",
+        "frontend:dev": "pnpm --filter frontend dev",
+        "frontend:build": "pnpm --filter frontend build",
+        "docker:up": "docker-compose up -d",
+        "docker:down": "docker-compose down",
+        "docker:build": "docker-compose build",
+        "db:migrate": "docker-compose exec backend pnpm run db:migrate",
+        "db:seed": "docker-compose exec backend pnpm run db:seed",
+        "test": "docker-compose exec backend pnpm test && docker-compose exec frontend pnpm test",
+        "test:local": "pnpm --filter backend test && pnpm --filter frontend test",
+        "lint": "docker-compose exec backend pnpm lint && docker-compose exec frontend pnpm lint",
+        "lint:local": "pnpm --filter backend lint && pnpm --filter frontend lint"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.42.0",
+        "prettier": "^3.0.0"
+    },
+    "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+}

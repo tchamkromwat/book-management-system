@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components; 
+@tailwind utilities;
+
+/* Prevent layout shift when scrollbar appears */
+@layer base {
+  html {
+    overflow-y: scroll;
+  }
+  
+  body {
+    scrollbar-gutter: stable;
+  }
+}
