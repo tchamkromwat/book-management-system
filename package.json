@@ -4,7 +4,7 @@
     "description": "Book Management System - Full Stack Application",
     "private": true,
     "scripts": {
-        "dev": "docker-compose down -v && docker-compose up --build",
+        "dev": "docker-compose down -v && docker-compose up --build -d",
         "dev:detached": "docker-compose up --build -d",
         "dev:logs": "docker-compose logs -f",
         "dev:stop": "docker-compose down",

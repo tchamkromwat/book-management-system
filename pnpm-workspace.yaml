@@ -1,9 +1,12 @@
 packages:
-  - 'src/backend'
-  - 'src/frontend'
+  - src/backend
+  - src/frontend
 
 onlyBuiltDependencies:
   - '@nestjs/core'
+  - '@parcel/watcher'
   - '@scarf/scarf'
+  - '@swc/core'
+  - esbuild
   - sharp
   - unrs-resolver
