@@ -1,0 +1,154 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Book Management System - Cursor Rules
+
+## Project Overview
+This is a **Full Stack Book Management System** monorepo built as an interview assignment demonstrating modern web development practices.
+
+**Tech Stack:**
+- Backend: NestJS + TypeScript + PostgreSQL + TypeORM + JWT Auth
+- Frontend: Nuxt 3 + Vue.js + TypeScript + Tailwind CSS + Pinia
+- DevOps: Docker + pnpm workspace
+
+## Project Structure
+```
+book-management-system/
+├── src/backend/          # NestJS API server
+├── src/frontend/         # Nuxt 3 web application  
+├── docker/              # Docker configuration
+└── package.json         # Root workspace config
+```
+
+## Development Guidelines
+
+### Code Style & Patterns
+- **Always use TypeScript** - No JavaScript files
+- **Follow NestJS patterns** for backend (modules, services, controllers, DTOs)
+- **Follow Vue 3 Composition API** for frontend components
+- **Use Tailwind CSS** for styling - no custom CSS unless absolutely necessary
+- **Implement proper error handling** with try-catch blocks and user-friendly messages
+- **Use type-safe API calls** with proper TypeScript interfaces
+
+### Backend (NestJS) Guidelines
+- **Module Structure**: Each feature should have its own module (auth, books, users)
+- **DTOs**: Always create DTOs for request validation using `class-validator`
+- **Services**: Business logic goes in services, not controllers
+- **Guards**: Use JWT guards for protected routes
+- **Entities**: Use TypeORM entities with proper decorators
+- **Error Handling**: Use NestJS built-in exception filters
+- **API Prefix**: All routes should use `/api/v1` prefix
+- **Documentation**: Use Swagger decorators for API documentation
+
+### Frontend (Nuxt 3) Guidelines
+- **Pages**: Use file-based routing in `pages/` directory
+- **Components**: Create reusable components in `components/`
+- **Composables**: Use composables for shared logic (`useApi`, `useBooks`)
+- **Stores**: Use Pinia for state management (auth, user data)
+- **Layouts**: Use `layouts/default.vue` for common layout
+- **Middleware**: Use auth middleware for protected routes
+- **Types**: Define interfaces in `types/index.ts`
+- **Styling**: Use Tailwind classes, responsive design first
+
+### Database Guidelines
+- **Schema Compliance**: Must match exact interview requirements
+- **Field Names**: Use snake_case for database fields (title, author, published_year, etc.)
+- **TypeORM**: Use decorators for entity definitions
+- **Migrations**: Create migrations for schema changes
+- **Seeding**: Use seeder service for sample data
+
+### Authentication Guidelines
+- **JWT Strategy**: Use Passport JWT strategy for authentication
+- **Protected Routes**: Apply JWT guards to protected endpoints
+- **Frontend Auth**: Store JWT in HTTP-only cookies or secure storage
+- **Route Protection**: Use auth middleware on frontend protected pages
+- **User Roles**: Implement user vs librarian permissions
+
+### API Design Guidelines
+- **RESTful**: Follow REST conventions (GET, POST, PUT, DELETE)
+- **Response Format**: Consistent response structure with data/message/status
+- **Validation**: Validate all inputs with DTOs and pipes
+- **Error Responses**: Return meaningful error messages with proper HTTP codes
+- **Pagination**: Use limit/offset for list endpoints
+- **Search/Filter**: Support query parameters for searching books
+
+### Docker & Environment
+- **Development**: Use `docker-compose.yml` for local development
+- **Environment Variables**: Use `.env` files for configuration
+- **Hot Reload**: Both backend and frontend should support hot reload in Docker
+- **Database**: PostgreSQL 15 container with persistent volumes
+
+### File Organization Patterns
+- **Backend**: `src/[module]/` structure with controllers, services, DTOs, entities
+- **Frontend**: Feature-based organization with pages, components, composables
+- **Shared Types**: Define API interfaces that can be shared between frontend/backend
+- **Constants**: Use constants for magic numbers, strings, and configuration
+
+### Performance & Best Practices
+- **Lazy Loading**: Use dynamic imports for large components
+- **Caching**: Implement proper caching strategies
+- **Validation**: Client-side validation with server-side verification
+- **Loading States**: Show loading spinners for async operations  
+- **Error Boundaries**: Handle errors gracefully with user feedback
+- **Responsive**: Mobile-first design with proper breakpoints
+
+### Testing Guidelines (When Implementing)
+- **Backend**: Jest unit tests for services and controllers
+- **Frontend**: Vitest for component testing
+- **E2E**: Integration tests for complete user workflows
+- **API Testing**: Test all CRUD operations and authentication flows
+
+### Security Guidelines
+- **Password Hashing**: Use bcrypt for password hashing
+- **JWT Security**: Proper token expiration and refresh logic
+- **Input Sanitization**: Validate and sanitize all user inputs
+- **CORS**: Configure CORS properly for frontend-backend communication
+- **Environment Secrets**: Never commit sensitive data to git
+
+## Common Tasks & Commands
+
+### Development
+```bash
+# Start development environment
+docker-compose up
+
+# Install dependencies
+pnpm install
+
+# Backend development
+cd src/backend && pnpm dev
+
+# Frontend development  
+cd src/frontend && pnpm dev
+```
+
+### Database
+```bash
+# Run migrations
+cd src/backend && pnpm typeorm migration:run
+
+# Generate migration
+cd src/backend && pnpm typeorm migration:generate
+
+# Seed database
+cd src/backend && pnpm seed
+```
+
+## Interview Focus Areas
+- **Complete CRUD Operations**: Demonstrate full book management
+- **Authentication Flow**: Registration, login, protected routes
+- **Responsive Design**: Mobile-first UI with Tailwind
+- **Clean Architecture**: Modular, maintainable code structure
+- **Error Handling**: Proper validation and error messages
+- **API Documentation**: Swagger/OpenAPI integration
+- **Modern Stack**: Latest versions of NestJS, Nuxt 3, TypeScript
+
+## Quick Reference
+- **Backend Port**: 3001 (API available at http://localhost:3001/api/v1)
+- **Frontend Port**: 3000 (Web app at http://localhost:3000)
+- **Database**: PostgreSQL on port 5432
+- **API Docs**: http://localhost:3001/api/docs (Swagger UI)
+
+When working on this project, always consider the interview context - showcase modern development practices, clean code, and attention to detail. The goal is to demonstrate full-stack competency with a production-ready application. 

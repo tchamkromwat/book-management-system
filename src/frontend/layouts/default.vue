@@ -66,14 +66,15 @@
                 >
                   <div
                     v-show="userMenuOpen"
-                    class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                    class="origin-top-right absolute right-0 mt-2 w-64 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"
                     @click.stop
                   >
                     <div class="px-4 py-2 border-b border-gray-100">
-                      <p class="text-sm text-gray-900">{{ authStore.user?.email }}</p>
+                      <p class="text-sm text-gray-900 truncate">{{ authStore.user?.email }}</p>
+                      <p class="text-xs text-gray-500 capitalize">{{ authStore.user?.role || 'User' }}</p>
                     </div>
                     <button
                       @click="handleLogout"

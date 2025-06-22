@@ -10,14 +10,18 @@ import {
     Patch,
     Post,
     Query,
+    Req,
+    UseGuards
 } from '@nestjs/common';
 import {
+    ApiBearerAuth,
     ApiOperation,
     ApiParam,
     ApiQuery,
     ApiResponse,
     ApiTags
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { BooksService, PaginatedResponse } from './books.service';
 import { BookQueryDto } from './dto/book-query.dto';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -26,6 +30,8 @@ import { Book } from './entities/book.entity';
 
 @ApiTags('books')
 @Controller('books')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class BooksController {
     constructor(private readonly booksService: BooksService) { }
 
@@ -37,8 +43,8 @@ export class BooksController {
         type: Book,
     })
     @ApiResponse({ status: 400, description: 'Bad Request.' })
-    async create(@Body() createBookDto: CreateBookDto): Promise<Book> {
-        return this.booksService.create(createBookDto);
+    async create(@Body() createBookDto: CreateBookDto, @Req() req: any): Promise<Book> {
+        return this.booksService.create(createBookDto, req.user.id);
     }
 
     @Get()
@@ -55,8 +61,8 @@ export class BooksController {
         description: 'Books retrieved successfully.',
         type: [Book],
     })
-    async findAll(@Query() query: BookQueryDto): Promise<PaginatedResponse<Book>> {
-        return this.booksService.findAll(query);
+    async findAll(@Query() query: BookQueryDto, @Req() req: any): Promise<PaginatedResponse<Book>> {
+        return this.booksService.findAll(query, req.user);
     }
 
     @Get('genres')
@@ -111,8 +117,9 @@ export class BooksController {
     async update(
         @Param('id', ParseIntPipe) id: number,
         @Body() updateBookDto: UpdateBookDto,
+        @Req() req: any,
     ): Promise<Book> {
-        return this.booksService.update(id, updateBookDto);
+        return this.booksService.update(id, updateBookDto, req.user);
     }
 
     @Delete(':id')
@@ -121,7 +128,7 @@ export class BooksController {
     @ApiParam({ name: 'id', type: 'number', description: 'Book ID' })
     @ApiResponse({ status: 204, description: 'Book has been successfully deleted.' })
     @ApiResponse({ status: 404, description: 'Book not found.' })
-    async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        return this.booksService.remove(id);
+    async remove(@Param('id', ParseIntPipe) id: number, @Req() req: any): Promise<void> {
+        return this.booksService.remove(id, req.user);
     }
 } 

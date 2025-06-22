@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 import { BookQueryDto } from './dto/book-query.dto';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -23,35 +24,23 @@ export class BooksService {
         private readonly bookRepository: Repository<Book>,
     ) { }
 
-    async create(createBookDto: CreateBookDto): Promise<Book> {
-        const book = this.bookRepository.create(createBookDto);
+    async create(createBookDto: CreateBookDto, userId: number): Promise<Book> {
+        const book = this.bookRepository.create({
+            ...createBookDto,
+            createdByUser: { id: userId } as User,
+        });
         return await this.bookRepository.save(book);
     }
 
-    async findAll(query: BookQueryDto): Promise<PaginatedResponse<Book>> {
+    async findAll(query: BookQueryDto, user: any): Promise<PaginatedResponse<Book>> {
         const { page = 1, limit = 10, search, genre, year, sortBy = 'createdAt', sortOrder = 'DESC' } = query;
-
-        // Build where conditions
-        const whereConditions: FindManyOptions<Book>['where'] = {};
-
-        if (search) {
-            whereConditions.title = Like(`%${search}%`);
-            // Note: TypeORM doesn't support OR in simple where, we'll use QueryBuilder for complex OR
-        }
-
-        if (genre) {
-            whereConditions.genre = Like(`%${genre}%`);
-        }
-
-        if (year) {
-            whereConditions.published_year = year;
-        }
 
         // Calculate offset
         const skip = (page - 1) * limit;
 
-        // For complex search with OR conditions, use QueryBuilder
-        let queryBuilder = this.bookRepository.createQueryBuilder('book');
+        // Build query with user relations
+        let queryBuilder = this.bookRepository.createQueryBuilder('book')
+            .leftJoinAndSelect('book.createdByUser', 'user');
 
         if (search) {
             queryBuilder = queryBuilder.where(
@@ -101,15 +90,40 @@ export class BooksService {
         return book;
     }
 
-    async update(id: number, updateBookDto: UpdateBookDto): Promise<Book> {
-        const book = await this.findOne(id);
+    async update(id: number, updateBookDto: UpdateBookDto, user: any): Promise<Book> {
+        const book = await this.bookRepository.findOne({
+            where: { id },
+            relations: ['createdByUser']
+        });
+
+        if (!book) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+
+        // Check permissions: user can only edit their own books, librarian can edit all
+        if (user.role !== 'librarian' && book.createdByUser?.id !== user.id) {
+            throw new ForbiddenException('You can only edit your own books');
+        }
 
         Object.assign(book, updateBookDto);
         return await this.bookRepository.save(book);
     }
 
-    async remove(id: number): Promise<void> {
-        const book = await this.findOne(id);
+    async remove(id: number, user: any): Promise<void> {
+        const book = await this.bookRepository.findOne({
+            where: { id },
+            relations: ['createdByUser']
+        });
+
+        if (!book) {
+            throw new NotFoundException(`Book with ID ${id} not found`);
+        }
+
+        // Check permissions: user can only delete their own books, librarian can delete all
+        if (user.role !== 'librarian' && book.createdByUser?.id !== user.id) {
+            throw new ForbiddenException('You can only delete your own books');
+        }
+
         await this.bookRepository.remove(book);
     }
 
