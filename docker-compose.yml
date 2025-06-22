@@ -5,7 +5,7 @@ services:
     container_name: book-db
     restart: always
     env_file:
-      - docker/env.dev
+      - docker/env.${ENVIRONMENT:-dev}
     ports:
       - "5433:5432"
     volumes:
@@ -13,7 +13,7 @@ services:
     networks:
       - book-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d book_management"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-book_management}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,13 +23,13 @@ services:
     build:
       context: .
       dockerfile: docker/backend.Dockerfile
-      target: development
+      target: ${BUILD_TARGET:-development}
     container_name: book-backend
     restart: always
     env_file:
-      - docker/env.dev
+      - docker/env.${ENVIRONMENT:-dev}
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
     ports:
       - "3001:3001"
       - "9229:9229" # Debug port
@@ -41,20 +41,28 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["sh", "-c", "sleep 5 && pnpm run start:dev"]
+    command: 
+      - sh
+      - -c
+      - |
+        if [ "$NODE_ENV" = "production" ]; then
+          node dist/main.js
+        else
+          sleep 5 && pnpm run start:dev
+        fi
 
   # Frontend (Nuxt.js)
   frontend:
     build:
       context: .
       dockerfile: docker/frontend.Dockerfile
-      target: development
+      target: ${BUILD_TARGET:-development}
     container_name: book-frontend
     restart: always
     env_file:
-      - docker/env.dev
+      - docker/env.${ENVIRONMENT:-dev}
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=${NODE_ENV:-development}
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
     ports:
@@ -67,7 +75,15 @@ services:
       - book-network
     depends_on:
       - backend
-    command: ["sh", "-c", "sleep 10 && pnpm run dev --host 0.0.0.0"]
+    command:
+      - sh
+      - -c
+      - |
+        if [ "$NODE_ENV" = "production" ]; then
+          node .output/server/index.mjs
+        else
+          sleep 10 && pnpm run dev --host 0.0.0.0
+        fi
 
 volumes:
   postgres_data:
