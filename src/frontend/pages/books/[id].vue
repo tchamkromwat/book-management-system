@@ -6,40 +6,38 @@
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-      <div class="flex">
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-red-800">Error</h3>
-          <p class="mt-1 text-sm text-red-700">{{ error }}</p>
-          <button
-            @click="loadBook"
-            class="mt-2 text-sm text-red-600 hover:text-red-500 underline"
-          >
-            Try again
-          </button>
-        </div>
+    <div v-else-if="error" class="alert alert-error mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <div>
+        <h3 class="font-bold">Error</h3>
+        <div class="text-xs">{{ error }}</div>
       </div>
+      <button @click="loadBook" class="btn btn-outline btn-sm">
+        Try again
+      </button>
     </div>
 
     <!-- Book Details -->
-    <div v-else-if="book" class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div v-else-if="book" class="card bg-base-100 shadow-xl">
       <!-- Header -->
-      <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+      <div class="card-body border-b border-base-300">
         <div class="flex justify-between items-start">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">{{ book.title }}</h1>
-            <p class="mt-1 text-sm text-gray-500">by {{ book.author }}</p>
+            <h1 class="card-title text-2xl text-base-content">{{ book.title }}</h1>
+            <p class="mt-1 text-sm text-base-content/70">by {{ book.author }}</p>
           </div>
-          <div class="flex space-x-3">
+          <div v-if="canEditOrDelete" class="flex space-x-3">
             <button
-              @click="editMode = !editMode"
-              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              @click="toggleEditMode"
+              class="btn btn-outline btn-sm"
             >
               {{ editMode ? 'Cancel' : 'Edit' }}
             </button>
             <button
               @click="handleDelete"
-              class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              class="btn btn-error btn-sm"
             >
               Delete
             </button>
@@ -48,125 +46,128 @@
       </div>
 
       <!-- Edit Form -->
-      <div v-if="editMode" class="p-6 border-b border-gray-200">
+      <div v-if="editMode && canEditOrDelete" class="card-body border-b border-base-300">
         <form @submit.prevent="handleUpdate" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Title -->
-            <div>
-              <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+            <div class="form-control">
+              <label for="title" class="label">
+                <span class="label-text">Title</span>
+              </label>
               <input
                 id="title"
                 v-model="editForm.title"
                 type="text"
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                :disabled="updateLoading"
+                class="input input-bordered w-full"
               >
             </div>
 
             <!-- Author -->
-            <div>
-              <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
+            <div class="form-control">
+              <label for="author" class="label">
+                <span class="label-text">Author</span>
+              </label>
               <input
                 id="author"
                 v-model="editForm.author"
                 type="text"
                 required
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                :disabled="updateLoading"
+                class="input input-bordered w-full"
               >
             </div>
 
             <!-- Genre -->
-            <div>
-              <label for="genre" class="block text-sm font-medium text-gray-700">Genre</label>
-              <input
-                id="genre"
-                v-model="editForm.genre"
-                type="text"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              >
-            </div>
+            <GenreSelector
+              v-model="editForm.genre"
+              :disabled="updateLoading"
+              label="Genre"
+              placeholder="Search or create a genre..."
+            />
 
             <!-- Published Year -->
-            <div>
-              <label for="published_year" class="block text-sm font-medium text-gray-700">Published Year</label>
+            <div class="form-control">
+              <label for="published_year" class="label">
+                <span class="label-text">Published Year</span>
+              </label>
               <input
                 id="published_year"
                 v-model.number="editForm.published_year"
                 type="number"
                 min="1000"
                 :max="new Date().getFullYear()"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                :disabled="updateLoading"
+                class="input input-bordered w-full"
               >
             </div>
-
           </div>
 
           <!-- Form Actions -->
           <div class="flex justify-end space-x-3">
             <button
               type="button"
-              @click="editMode = false"
-              class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              @click="cancelEdit"
+              :disabled="updateLoading"
+              class="btn btn-outline"
             >
               Cancel
             </button>
             <button
               type="submit"
               :disabled="updateLoading"
-              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="btn btn-primary"
             >
-              {{ updateLoading ? 'Updating...' : 'Update Book' }}
+              <LoadingSpinner v-if="updateLoading" size="sm" color="white" />
+              <span v-if="updateLoading" class="ml-2">Updating...</span>
+              <span v-else>Update Book</span>
             </button>
           </div>
         </form>
       </div>
 
       <!-- Book Information -->
-      <div v-else class="px-4 py-5 sm:p-6">
+      <div v-else class="card-body">
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
           <div v-if="book.genre">
-            <dt class="text-sm font-medium text-gray-500">Genre</dt>
-            <dd class="mt-1 text-sm text-gray-900">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <dt class="text-sm font-medium text-base-content/70">Genre</dt>
+            <dd class="mt-1">
+              <span class="badge badge-primary">
                 {{ book.genre }}
               </span>
             </dd>
           </div>
 
           <div v-if="book.published_year">
-            <dt class="text-sm font-medium text-gray-500">Published Year</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ book.published_year }}</dd>
-          </div>
-
-
-
-          <div>
-            <dt class="text-sm font-medium text-gray-500">Date Added</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ formatDate(book.createdAt) }}</dd>
+            <dt class="text-sm font-medium text-base-content/70">Published Year</dt>
+            <dd class="mt-1 text-sm text-base-content">{{ book.published_year }}</dd>
           </div>
 
           <div>
-            <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
-            <dd class="mt-1 text-sm text-gray-900">{{ formatDate(book.updatedAt) }}</dd>
+            <dt class="text-sm font-medium text-base-content/70">Date Added</dt>
+            <dd class="mt-1 text-sm text-base-content">{{ formatDate(book.createdAt) }}</dd>
           </div>
 
-
+          <div>
+            <dt class="text-sm font-medium text-base-content/70">Last Updated</dt>
+            <dd class="mt-1 text-sm text-base-content">{{ formatDate(book.updatedAt) }}</dd>
+          </div>
         </dl>
       </div>
     </div>
 
     <!-- Not Found -->
-    <div v-else class="text-center py-12">
-      <div class="mx-auto h-12 w-12 text-gray-400 text-4xl mb-4">📚</div>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">Book not found</h3>
-      <p class="mt-1 text-sm text-gray-500">The book you're looking for doesn't exist or has been removed.</p>
-      <div class="mt-6">
-        <NuxtLink
-          to="/books"
-          class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-        >
-          Back to Books
-        </NuxtLink>
+    <div v-else class="hero min-h-96">
+      <div class="hero-content text-center">
+        <div class="max-w-md">
+          <div class="text-6xl mb-4">📚</div>
+          <h3 class="text-2xl font-bold text-base-content">Book not found</h3>
+          <p class="py-6 text-base-content/70">The book you're looking for doesn't exist or has been removed.</p>
+          <NuxtLink to="/books" class="btn btn-primary">
+            Back to Books
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </div>
@@ -179,6 +180,7 @@ definePageMeta({
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const { currentBook: book, loading, error, fetchBook, updateBook, deleteBook } = useBooks()
 
@@ -192,6 +194,17 @@ const editForm = reactive({
   author: '',
   genre: '',
   published_year: undefined
+})
+
+// Permission check function
+const canEditOrDelete = computed(() => {
+  if (!authStore.user || !book.value) return false
+  
+  // Librarians and admins can edit/delete all books
+  if (authStore.user.role === 'librarian' || authStore.user.role === 'admin') return true
+  
+  // Users can only edit/delete their own books
+  return book.value.createdByUser?.id === authStore.user.id
 })
 
 // Load book data
@@ -215,8 +228,30 @@ const loadBook = async () => {
   }
 }
 
+// Toggle edit mode and update URL
+const toggleEditMode = () => {
+  if (!canEditOrDelete.value) return // Extra security check
+  
+  if (editMode.value) {
+    cancelEdit()
+  } else {
+    editMode.value = true
+    router.push({ query: { ...route.query, edit: 'true' } })
+  }
+}
+
+// Cancel edit mode and remove edit parameter from URL
+const cancelEdit = () => {
+  editMode.value = false
+  const query = { ...route.query }
+  delete query.edit
+  router.push({ query })
+}
+
 // Handle book update
 const handleUpdate = async () => {
+  if (!canEditOrDelete.value) return // Extra security check
+  
   updateLoading.value = true
   
   try {
@@ -226,7 +261,7 @@ const handleUpdate = async () => {
     )
     
     await updateBook(route.params.id, updateData)
-    editMode.value = false
+    cancelEdit() // This will exit edit mode and clean URL
   } catch (err) {
     console.error('Failed to update book:', err)
   } finally {
@@ -236,6 +271,8 @@ const handleUpdate = async () => {
 
 // Handle book deletion
 const handleDelete = async () => {
+  if (!canEditOrDelete.value) return // Extra security check
+  
   if (!confirm('Are you sure you want to delete this book? This action cannot be undone.')) {
     return
   }
@@ -274,6 +311,18 @@ watch(() => route.params.id, () => {
     loadBook()
   }
 })
+
+// Watch for edit query parameter and permissions
+watch([() => route.query.edit, canEditOrDelete], ([editQuery, hasPermission]) => {
+  if (editQuery === 'true' && hasPermission) {
+    editMode.value = true
+  } else if (editQuery === 'true' && !hasPermission) {
+    // If user tries to access edit mode without permission, remove the query param
+    const query = { ...route.query }
+    delete query.edit
+    router.replace({ query })
+  }
+}, { immediate: true })
 
 // Set page title
 useHead({

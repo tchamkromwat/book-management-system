@@ -100,8 +100,8 @@ export class BooksService {
             throw new NotFoundException(`Book with ID ${id} not found`);
         }
 
-        // Check permissions: user can only edit their own books, librarian can edit all
-        if (user.role !== 'librarian' && book.createdByUser?.id !== user.id) {
+        // Check permissions: user can only edit their own books, librarian and admin can edit all
+        if (user.role !== 'librarian' && user.role !== 'admin' && book.createdByUser?.id !== user.id) {
             throw new ForbiddenException('You can only edit your own books');
         }
 
@@ -119,8 +119,8 @@ export class BooksService {
             throw new NotFoundException(`Book with ID ${id} not found`);
         }
 
-        // Check permissions: user can only delete their own books, librarian can delete all
-        if (user.role !== 'librarian' && book.createdByUser?.id !== user.id) {
+        // Check permissions: user can only delete their own books, librarian and admin can delete all
+        if (user.role !== 'librarian' && user.role !== 'admin' && book.createdByUser?.id !== user.id) {
             throw new ForbiddenException('You can only delete your own books');
         }
 

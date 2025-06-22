@@ -7,10 +7,16 @@
 </template>
 
 <script setup>
-// Initialize authentication on app startup
-const authStore = useAuthStore()
+// Initialize theme management globally
+const { loadSavedTheme } = useTheme()
 
 onMounted(() => {
-  authStore.initAuth()
+  // Initialize theme
+  loadSavedTheme()
 })
+
+// Also initialize theme for SSR/client hydration
+if (process.client) {
+  loadSavedTheme()
+}
 </script>

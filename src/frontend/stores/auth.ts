@@ -8,6 +8,20 @@ export const useAuthStore = defineStore('auth', () => {
     const loading = ref(false)
     const error = ref<string | null>(null)
 
+    // Initialize token from cookie immediately
+    const tokenCookie = useCookie('auth-token', {
+        default: () => '',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        httpOnly: false,
+        secure: false, // Set to false for development
+        sameSite: 'strict'
+    })
+
+    // Set initial token if available
+    if (tokenCookie.value) {
+        token.value = tokenCookie.value
+    }
+
     // Getters
     const isAuthenticated = computed(() => !!token.value)
     const fullName = computed(() => {
@@ -24,13 +38,6 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = authData.access_token
 
         // Store token in cookie
-        const tokenCookie = useCookie('auth-token', {
-            default: () => '',
-            maxAge: 60 * 60 * 24 * 7, // 7 days
-            httpOnly: false,
-            secure: false, // Set to false for development
-            sameSite: 'strict'
-        })
         tokenCookie.value = authData.access_token
 
         error.value = null
@@ -41,7 +48,6 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = null
 
         // Clear token cookie
-        const tokenCookie = useCookie('auth-token')
         tokenCookie.value = null
 
         error.value = null
@@ -108,16 +114,15 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    const initAuth = () => {
-        // Initialize auth from cookie
-        const tokenCookie = useCookie('auth-token')
-        if (tokenCookie.value) {
-            token.value = tokenCookie.value
-            // Fetch profile to validate token
-            fetchProfile().catch(() => {
+    const initAuth = async () => {
+        // If we have a token but no user data, fetch profile
+        if (token.value && !user.value) {
+            try {
+                await fetchProfile()
+            } catch (err) {
                 // Token is invalid, clear auth
                 clearAuth()
-            })
+            }
         }
     }
 

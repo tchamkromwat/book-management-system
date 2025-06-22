@@ -25,6 +25,7 @@ export interface Book {
     author: string;
     published_year?: number;
     genre?: string;
+    createdByUser?: User;
     createdAt: string;
     updatedAt: string;
 }
