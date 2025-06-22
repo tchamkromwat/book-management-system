@@ -1,8 +1,9 @@
 # Multi-stage Dockerfile for NestJS Backend
 FROM node:24-alpine3.22 AS base
 
-# Install security updates and pnpm
+# Install security updates, curl, and pnpm
 RUN apk update && apk upgrade && \
+    apk add --no-cache curl && \
     npm install -g pnpm
 
 # Set working directory
