@@ -34,6 +34,3 @@ Thumbs.db
 
 # Docker
 postgres_data/
-
-# Package manager
-pnpm-lock.yaml 
